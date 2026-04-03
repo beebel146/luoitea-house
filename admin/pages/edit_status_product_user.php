@@ -51,13 +51,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Trạng thái không hợp lệ");
     }
 
+    $updates = ["status = '$status'"];
+
+    // Automatically manage payment status for COD orders
+    $currentPaymentStatus = $order['payment_status'] ?? 'unpaid';
+    $currentPaymentMethod = $order['payment_method'] ?? '';
+    
+    if ($currentPaymentMethod === 'cod') {
+        if ($status === 'completed' && $currentPaymentStatus !== 'paid') {
+            $updates[] = "payment_status = 'paid'";
+            $updates[] = "paid_at = NOW()";
+        } elseif ($status !== 'completed' && $currentPaymentStatus === 'paid') {
+            // Revert back to unpaid if they moved away from completed
+            $updates[] = "payment_status = 'unpaid'";
+            $updates[] = "paid_at = NULL";
+        }
+    }
+
+    $updateStr = implode(', ', $updates);
+
     mysqli_query($conn, "
         UPDATE orders 
-        SET status = '$status'
+        SET $updateStr
         WHERE id = $id
     ");
 
-    header("Location: orders.php");
+    // Redirect to the same page to show updated info, or to orders.php
+    header("Location: edit_status_product_user.php?id=$id");
     exit;
 }
 
@@ -81,14 +101,58 @@ require_once(__DIR__ . "/../includes/admin_header.php");
 <div class="invoice-card">
     <div class="invoice-header">
         <div class="invoice-customer">
-            <h3>Tên Khách Hàng: <?= htmlspecialchars($order['username']) ?></h3>
-            <p>📞 Phone: <?= htmlspecialchars($order['phone']) ?></p>
-            <p>📍 Location: <?= htmlspecialchars($order['address']) ?></p>
+            <h3>Tên Khách Hàng/Người nhận: <?= htmlspecialchars(!empty($order['name']) ? $order['name'] : $order['username']) ?></h3>
+            <p>📞 Phone: <?= htmlspecialchars($order['phone'] ?? '') ?></p>
+            <p>📍 Location: <?= htmlspecialchars($order['address'] ?? '') ?></p>
         </div>
         <div>
             <span class="badge <?= $order['status'] ?> invoice-badge">
-                <?= $statusLabels[$order['status']] ?? $order['status'] ?>
+                <?= isset($statusLabels[$order['status']]) ? $statusLabels[$order['status']] : $order['status'] ?>
             </span>
+        </div>
+    </div>
+
+    <!-- CHI TIẾT ĐƠN HÀNG -->
+    <div class="invoice-details" style="margin-top: 20px; margin-bottom: 20px; padding: 15px; background: rgba(0,0,0,0.15); border-radius: 8px; border: 1px solid var(--border);">
+        <h4 style="margin: 0 0 15px; font-family: var(--font-heading); font-size: 16px; color: var(--sidebar); border-bottom: 1px solid var(--border); padding-bottom: 10px;">Chi tiết đơn hàng / Giao dịch</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 14px; color: var(--text);">
+            <div>
+                <p style="margin-bottom: 8px;"><strong>Ngày đặt hàng:</strong> <span style="color: var(--muted);"><?= !empty($order['created_at']) ? date('d/m/Y H:i', strtotime($order['created_at'])) : '---' ?></span></p>
+                <p style="margin-bottom: 8px;"><strong>Hình thức:</strong> 
+                    <span style="color: var(--sidebar); font-weight: 600;">
+                    <?php
+                        $method = $order['payment_method'] ?? '';
+                        if ($method === 'cod') echo 'Thanh toán khi nhận hàng (COD)';
+                        elseif ($method === 'bank_transfer' || $method === 'bank') echo 'Chuyển khoản ngân hàng';
+                        else echo htmlspecialchars($method);
+                    ?>
+                    </span>
+                </p>
+            </div>
+            <div>
+                <p style="margin-bottom: 8px;"><strong>Trạng thái thanh toán:</strong> 
+                    <?php
+                    $pStatus = $order['payment_status'] ?? 'unpaid';
+                    if ($pStatus === 'paid') {
+                        echo '<span style="color: #4cd137; font-weight: 700;">Đã thanh toán ' . (!empty($order['paid_at']) ? '('.date('d/m H:i', strtotime($order['paid_at'])).')' : '') . '</span>';
+                    } else {
+                        echo '<span style="color: #e84118; font-weight: 700;">Chưa thanh toán</span>';
+                    }
+                    ?>
+                </p>
+                <p style="margin-bottom: 8px;"><strong>Mã áp dụng giảm giá:</strong> 
+                    <span style="color: var(--muted);">
+                        <?= !empty($order['coupon_id']) ? 'Mã ID: ' . (int)$order['coupon_id'] . ' (-' . number_format((float)($order['discount_amount'] ?? 0)) . 'đ)' : 'Không có' ?>
+                    </span>
+                </p>
+            </div>
+            <div style="grid-column: 1 / -1; padding-top: 10px; border-top: 1px dashed var(--border);">
+                <p style="margin: 0;"><strong>Ghi chú của khách hàng:</strong> <br/>
+                <span style="color: var(--muted); display: inline-block; margin-top: 5px;">
+                    <?= !empty($order['note']) ? nl2br(htmlspecialchars($order['note'])) : '<em>Không có ghi chú</em>' ?>
+                </span>
+                </p>
+            </div>
         </div>
     </div>
 

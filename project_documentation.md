@@ -121,7 +121,7 @@ Dưới đây là danh sách chi tiết các công việc và nhiệm vụ của
 - **`login.php`**: Trang đăng nhập vào hệ thống dành cho khách hàng.
 - **`logout.php`**: File xử lý logic hủy phiên đăng nhập (`session_destroy()`).
 - **`notifications.php`**: Hộp thư đọc thông báo hệ thống được gửi từ Admin.
-- **`order_detail.php`**: Trang xem chi tiết một đơn đặt hàng cũ của chính người dùng (món gì, giá bao nhiêu).
+- **`order_detail.php`**: Trang xem chi tiết một đơn đặt hàng của người dùng (món nước, giá, tổng tiền, trạng thái giao hàng và đặc biệt là trạng thái/phương thức thanh toán chính xác).
 - **`orders.php`**: Trang liệt kê toàn bộ lịch sử các đơn hàng đã đặt của khách hàng.
 - **`payment.php`**: Trang hiển thị trạng thái trung gian hoặc thông tin xử lý thanh toán.
 - **`product_detail.php`**: Trang hiển thị chi tiết một loại đồ uống, nơi người dùng chọn thuộc tính (Size, Số lượng) để thêm vào giỏ.
@@ -168,11 +168,11 @@ Dưới đây là danh sách chi tiết các công việc và nhiệm vụ của
 - **`add_product.php`**: Form nhập thức uống mới (đăng ảnh, thiết lập giá S, M, L).
 - **`edit_coupon.php`**: Chỉnh sửa mã giảm giá hiện có.
 - **`edit_product.php`**: Cập nhật thông tin hình ảnh, giá bán của đồ uống.
-- **`edit_status_product_user.php`**: Tính năng bật tắt trực tiếp nhãn "Còn hàng" hoặc "Hết hàng" của đồ uống.
+- **`edit_status_product_user.php`**: Cửa sổ thiết lập chi tiết trạng thái đơn hàng. Nơi hiển thị thông tin chi tiết đầy đủ của đơn (tên thật người nhận, ngày đặt, hình thức và trạng thái thanh toán, ghi chú, mã coupon). Tích hợp sẵn logic tự động quản lý trạng thái thanh toán đối với đơn COD.
 - **`manage_coupons.php`**: Giao diện quản lý toàn bộ Mã Khuyến Mãi.
 - **`manage_products.php`**: Giao diện hiển thị danh sách các loại đồ uống.
 - **`notifications.php`**: Hệ thống soạn thảo và gửi thông báo chung (Khuyến mãi dịp lễ...) đến toàn bộ Users.
-- **`orders.php`**: Trang duyệt đơn hàng (Cập nhật trạng thái "Đang chuẩn bị", "Đang giao", "Thành công").
+- **`orders.php`**: Trang hiển thị danh sách tổng hợp tất cả các đơn hàng, cung cấp đường dẫn để xem và cập nhật chi tiết tình trạng đơn.
 - **`users.php`**: Trang danh sách tài khoản thành viên trong hệ thống.
 
 ### Thư mục `admin/api/` (API vùng Quản trị)
