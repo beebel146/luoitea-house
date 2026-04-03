@@ -1,0 +1,22 @@
+body {
+  margin: 0;
+  font-family: "Mulish", "Segoe UI", sans-serif;
+  background: #FAF8F5;
+  color: #2C2C2C;
+}
+#toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #333;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: 0.3s;
+  z-index: 2000;
+}
+
+#toast.show {
+  opacity: 1;
+}
