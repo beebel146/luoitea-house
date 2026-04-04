@@ -3,25 +3,7 @@ require_once("../../config/config.php");
 require_once("../auth_admin.php");
 
 $coupons = mysqli_query($conn, "SELECT * FROM coupons ORDER BY id DESC");
-?>
-<?php
-$page_title = 'Mã Giảm Giá';
-$page_subtitle = 'Tạo voucher kích cầu thả ga';
-$active_page = 'coupons';
-$extra_css = '
-<style>
-    .badge-active { background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 800; display: inline-block; text-transform: uppercase;}
-    .badge-inactive { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 800; display: inline-block; text-transform: uppercase;}
-</style>';
-require_once(__DIR__ . "/../includes/admin_header.php");
-?>
-<?php
-require_once("../../config/config.php");
-require_once("../auth_admin.php");
 
-$coupons = mysqli_query($conn, "SELECT * FROM coupons ORDER BY id DESC");
-?>
-<?php
 $page_title = 'Mã Giảm Giá';
 $page_subtitle = 'Tạo voucher kích cầu thả ga';
 $active_page = 'coupons';
@@ -75,6 +57,7 @@ require_once(__DIR__ . "/../includes/admin_header.php");
                 </div>
                 
                 <div class="col-action actions">
+                    <a class="btn-edit-icon" href="coupon_usage.php?id=<?= $c['id'] ?>" title="Xem lịch sử và lượt dùng">👥</a>
                     <a class="btn-edit-icon" href="edit_coupon.php?id=<?= $c['id'] ?>" title="Sửa mã">✏️</a>
                     <a class="btn-delete-icon" href="../delete_coupon.php?id=<?= $c['id'] ?>" onclick="return confirm('Bạn có chắc chắn muốn xóa mã này?')" title="Xóa mã">🗑</a>
                 </div>

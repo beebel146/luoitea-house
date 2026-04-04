@@ -51,7 +51,10 @@ try {
             // Cập nhật lượt dùng mã giảm giá
             if ($order_data['coupon_id'] && $order_data['discount_amount'] > 0) {
                 $cid = (int)$order_data['coupon_id'];
+                $uid = (int)$order_data['user_id'];
                 mysqli_query($conn, "UPDATE coupons SET used_count = used_count + 1 WHERE id = $cid");
+                mysqli_query($conn, "INSERT INTO coupon_user_usage (coupon_id, user_id, used_count) VALUES ($cid, $uid, 1) ON DUPLICATE KEY UPDATE used_count = used_count + 1");
+                mysqli_query($conn, "INSERT INTO coupon_usage_history (coupon_id, user_id, order_id) VALUES ($cid, $uid, $order_id)");
             }
 
             // Xóa khỏi bảng tạm
@@ -83,7 +86,10 @@ try {
         // 3. Cập nhật lượt dùng mã giảm giá
         if ($order['coupon_id'] && $order['discount_amount'] > 0) {
             $cid = (int)$order['coupon_id'];
+            $uid = (int)$order['user_id'];
             mysqli_query($conn, "UPDATE coupons SET used_count = used_count + 1 WHERE id = $cid");
+            mysqli_query($conn, "INSERT INTO coupon_user_usage (coupon_id, user_id, used_count) VALUES ($cid, $uid, 1) ON DUPLICATE KEY UPDATE used_count = used_count + 1");
+            mysqli_query($conn, "INSERT INTO coupon_usage_history (coupon_id, user_id, order_id) VALUES ($cid, $uid, {$order['id']})");
         }
     }
 
